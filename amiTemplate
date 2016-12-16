@@ -256,6 +256,8 @@ Resources:
         - Fn::Base64: !Sub |
            #!/bin/bash
            echo ECS_CLUSTER=${EcsClusterName} >> /etc/ecs/ecs.config
+           sudo rm -r /var/lib/ecs/data/*
+           sudo docker run -d --name ecs-agent1 --detach=true --restart=on-failure:10 --volume=/var/run/docker.sock:/var/run/docker.sock --volume=/var/log/ecs/:/log:z --volume=/var/lib/ecs/data:/data:z --net=host --env=ECS_LOGFILE=/log/ecs-agent.log --env=ECS_LOGLEVEL=info --env=ECS_DATADIR=/data --env=ECS_CLUSTER=updateuser --env=ECS_ENABLE_TASK_IAM_ROLE=true --env=ECS_ENABLE_TASK_IAM_ROLE_NETWORK_HOST=true --env=ECS_AVAILABLE_LOGGING_DRIVERS=[\"json-file\",\"awslogs\"] amazon/amazon-ecs-agent:latest
   EcsInstanceAsg:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
